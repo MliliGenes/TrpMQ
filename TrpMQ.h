@@ -75,11 +75,13 @@ typedef struct
     int listen_fd;
 
     struct pollfd *fds;
-    int n_clients;
-    int n_channels;
+    int n_fds;
 
     MQChannel *channels;
+    int n_clients;
+
     MQClient *clients;
+    int n_channels;
 } MQBroker;
 
 int MQ_push_fd(MQBroker *broker, MQServerConfig *configs, int socket_fd, short event);

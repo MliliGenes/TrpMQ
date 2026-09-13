@@ -5,7 +5,7 @@ int MQ_push_fd(MQBroker *broker, MQServerConfig *configs, int socket_fd, short e
     if (event != POLLIN && event != POLLOUT && event != (POLLIN | POLLOUT))
         return -1;
 
-    if (broker->n_clients >= configs->max_clients)
+    if (broker->n_clients >= configs->max_clients + 1)
         return -1;
 
     broker->fds[broker->n_clients].fd = socket_fd;
@@ -117,5 +117,6 @@ int MQ_listen(MQBroker *broker, MQServerConfig *configs)
     if (listen(broker->listen_fd, configs->backlog) < 0)
         return -1;
 
+    MQ_push_fd(broker, configs, broker->listen_fd, POLLIN);
     return 0;
 }
