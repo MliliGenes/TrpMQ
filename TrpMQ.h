@@ -36,16 +36,6 @@ typedef struct
 
 typedef struct
 {
-    int fd;
-
-    int subs[MQ_DEFAULT_MAX_SUBS];
-    MQmessage* message_buffer[MQ_DEFAULT_MAX_CHANNELS]
-
-    int nsubs;
-} MQClient;
-
-typedef struct
-{
     size_t body_size;
     long timestamp;
     char title[MQ_TEXT_SIZE];
@@ -53,7 +43,7 @@ typedef struct
     char *body;
 } MQmessage;
 
-typedef struct
+typedef struct MQEvent
 {
     MQmessage *msg;
 
@@ -70,8 +60,19 @@ typedef struct
     MQEvent *tail;
 
     int nsubs;
-    int clients[MQ_DEFAULT_MAX_CLIENTS];
+    int* clients;
 } MQChannel;
+
+typedef struct
+{
+    int fd;
+
+    int nsubs;
+    int* subs;
+    MQmessage* message_buffer;
+
+    int cap;
+} MQClient;
 
 typedef struct
 {
