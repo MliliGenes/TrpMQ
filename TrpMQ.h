@@ -19,8 +19,8 @@
 #define MQ_DEFAULT_BACKLOG 16
 
 #define MQ_DEFAULT_MAX_CLIENTS 1024
-#define MQ_MAX_CHANNELS 64
-#define MQ_MAX_SUBS 64
+#define MQ_DEFAULT_MAX_CHANNELS 64
+#define MQ_DEFAULT_MAX_SUBS 64
 
 #define MQ_TEXT_SIZE 255
 
@@ -38,17 +38,19 @@ typedef struct
 {
     int fd;
 
-    int subs[MQ_MAX_SUBS];
+    int subs[MQ_DEFAULT_MAX_SUBS];
+    MQmessage* message_buffer[MQ_DEFAULT_MAX_CHANNELS]
+
     int nsubs;
 } MQClient;
 
 typedef struct
 {
-    long timestamp;
-
-    char title[MQ_TEXT_SIZE];
-    char *body;
     size_t body_size;
+    long timestamp;
+    char title[MQ_TEXT_SIZE];
+
+    char *body;
 } MQmessage;
 
 typedef struct
@@ -68,6 +70,7 @@ typedef struct
     MQEvent *tail;
 
     int nsubs;
+    int clients[MQ_DEFAULT_MAX_CLIENTS];
 } MQChannel;
 
 typedef struct
