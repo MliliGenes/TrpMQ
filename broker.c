@@ -139,7 +139,11 @@ static int add_client_sub(MQBroker *broker, int slot, int channel_id)
     client->subs[client->nsubs] = channel_id;
     client->cursors[client->nsubs] = 0;
     ++client->nsubs;
-    return MQ_channel_subscribe(broker, channel_id, slot);
+    if (MQ_channel_subscribe(broker, channel_id, slot) < 0) {
+        --client->nsubs;
+        return -1;
+    }
+    return 0;
 }
 
 static int send_error(int fd, int channel_id)
@@ -290,9 +294,10 @@ int MQ_clients_init(MQBroker *broker, MQServerConfig *configs)
     broker->clients = calloc((size_t)configs->max_clients, sizeof(*broker->clients));
     if (!broker->clients)
         return -1;
+    for (int i = 0; i < configs->max_clients; ++i)
+        broker->clients[i].fd = -1;
     for (int i = 0; i < configs->max_clients; ++i) {
         MQClient *client = &broker->clients[i];
-        client->fd = -1;
         client->cap = (size_t)configs->max_subs;
         client->subs = calloc(client->cap, sizeof(*client->subs));
         client->cursors = calloc(client->cap, sizeof(*client->cursors));
