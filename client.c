@@ -78,7 +78,7 @@ static int read_reply(MQClient *client, int expected_channel, int *finished,
             }
         }
         *tail = pending;
-        tail = (MQPending **)&pending->next;
+        tail = &pending->next;
     }
 
     if (result == 0 && *finished && client->on_message) {
