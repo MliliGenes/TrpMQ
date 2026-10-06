@@ -43,13 +43,19 @@ static int read_reply(MQClient *client, int expected_channel, int *finished,
             continue;
         }
         if (type == MQ_CMD_ERROR) {
-            char error[MQ_MAX_BODY_SIZE + 1];
+            char *error = malloc((size_t)body_size + 1);
+            if (!error) {
+                result = -1;
+                break;
+            }
             if (body_size && MQ_read_full(client->fd, error, body_size) != 1) {
+                free(error);
                 result = -1;
                 break;
             }
             error[body_size] = '\0';
             fprintf(stderr, "TrpMQ server error: %s\n", error);
+            free(error);
             result = -1;
             break;
         }
