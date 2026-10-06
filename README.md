@@ -18,18 +18,31 @@ registered message callback for each new event.
 
 ## User registration notification test
 
-Start the broker, then run the single-process demo:
+Build the separate test clients:
 
 ```sh
-./mq_server 9000
-./mq_user_demo 127.0.0.1 9000 42
+make test-clients
 ```
 
-The demo opens two independent TCP connections. The observer subscribes to
-channel `42` and starts its pthread monitor; the registrar asks for a username,
-email, and display name in the terminal, then publishes a `USER_CREATED`
-message. The observer prints the received URL-encoded flattened buffer, for
-example `event=user_created&username=saad&email=...&display_name=...`.
+Open three terminals. Start the broker in terminal 1, the observing client in
+terminal 2, and the registration form in terminal 3:
+
+```sh
+# terminal 1
+./mq_server 9000
+
+# terminal 2
+./tests/client2/client2 127.0.0.1 9000 42
+
+# terminal 3
+./tests/client1/client1 127.0.0.1 9000 42
+```
+
+Client 2 subscribes to channel `42` and starts its pthread monitor. Client 1
+collects username, email, and display name in the terminal, then publishes a
+`USER_CREATED` message as one URL-encoded flattened buffer. Client 2 prints the
+received data. The first subscription creates the channel if it does not exist.
+The earlier combined demonstration remains available as `mq_user_demo`.
 
 ## Wire protocol
 
