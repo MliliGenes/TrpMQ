@@ -16,6 +16,21 @@ In the client, publish using `<channel-id> <title>|<message>`. Ctrl-D exits.
 The pthread monitor polls every subscribed channel every 250 ms and calls the
 registered message callback for each new event.
 
+## User registration notification test
+
+Start the broker, then run the single-process demo:
+
+```sh
+./mq_server 9000
+./mq_user_demo 127.0.0.1 9000 42
+```
+
+The demo opens two independent TCP connections. The observer subscribes to
+channel `42` and starts its pthread monitor; the registrar asks for a username,
+email, and display name in the terminal, then publishes a `USER_CREATED`
+message. The observer prints the received URL-encoded flattened buffer, for
+example `event=user_created&username=saad&email=...&display_name=...`.
+
 ## Wire protocol
 
 Each frame is a 31-byte header followed by `title_size` bytes and then
