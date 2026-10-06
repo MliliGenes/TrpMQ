@@ -7,6 +7,9 @@ COMMON = broker.o channel.o
 
 all: mq_server mq_client mq_user_demo
 
+test-clients:
+	$(MAKE) -C tests
+
 mq_server: server_main.o $(COMMON)
 	$(CC) $(CFLAGS) -o $@ $^ $(LDLIBS)
 
@@ -21,5 +24,6 @@ mq_user_demo: user_demo.o client.o broker.o channel.o
 
 clean:
 	rm -f *.o mq_server mq_client mq_user_demo
+	$(MAKE) -C tests clean
 
-.PHONY: all clean
+.PHONY: all clean test-clients
